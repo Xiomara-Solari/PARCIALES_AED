@@ -1,0 +1,214 @@
+//CONSIDERAMOS QUE PUEDE EXISTIR UN RESTAURANTE QUE NO TENGA PUNTUACIONES MENORES A 04//
+//consideraciones de auxiliares:
+cuando la auxiliar vuelve a crearse, se destruye el contenido de la anterior (se reescribe)
+para ver el contenido hay que cerrarla primero 
+se las define igual que las demás secuencias, con sus respectivas ventanas
+//
+
+accion ejercicio1 es
+    AMBIENTE 
+        comentarios: secuencia de caracter
+        c: caracter
+        restaurante: secuencia de caracter 
+        r: caracter
+        salida: secuencia de caracter
+        s: caracter
+        AUX1, AUX2: secuencia de caracter 
+        a1,a2:caracter 
+        p1,p2,c1,c2,c3:a_caracter
+        control, pal, num2, num1, total: entero 
+        prom:real 
+
+        funcion a_caracter(n:entero): caracter 
+            Segun n hacer 
+                0: a_caracter:="0"
+                1:a_caracter:="1"
+                2:a_caracter:="2"
+                3:a_caracter:="3"
+                4:a_caracter:="4"
+                5:a_caracter:="5"
+                6:a_caracter:="6"
+                7:a_caracter:="7"
+                8:a_caracter:="8"
+                9:a_caracter:="9"
+            Finsegun 
+        finfuncion
+
+    PROCESO 
+        ARR(restaurante)
+        ARR(comentarios)
+        AVZ(restaurantes,r)
+        AVZ(comentarios,c)
+        CREAR(salida)
+        control_buena:=0
+        control_mala:=0
+        control_perfecta:=0
+        cant_restaurantes:=0
+
+        Mientras NFDS(comentarios) hacer // c<>*
+                    CREAR(AUX1) //para el restaurante 
+                    Mientras r<>"," hacer 
+                            GRABAR(AUX1, a1) //voy copiando el nombre
+                            AVZ(AUX1,a1)
+                    Finmientras
+                    CERRAR(AUX1) //la que guarda el restaurante 
+                    Mientras r<>"." hacer //avanzo la direccion 
+                        AVZ(restaurante, r)
+                    Finmientras 
+                    CREAR(AUX2)
+                    Mientras c<>"@" hacer //mientras no cambie de restaurante
+                        estoy en mi primer comentario 
+                        //convertimos solo para poder comparar porque con caracteres no se puede
+                        num1:=a_entero(c)
+                        p1:=c
+                        AVZ(comentarios, c)
+                        num2:=a_entero(c)
+                        p2:c //resguardo el caracter 
+                        AVZ(comentarios, c)
+                        total:= num1*10+num2
+                        Si total <=4 entonces //controlo la puntuaciom 
+                            control_mala:=control_mala + 1 //por lo menos un comentario menor a 4
+                            GRABAR(AUX2, p1)
+                            GRABAR(AUX2, p2)
+                            Para i:=1 a 8 hacer //copiar fecha 
+                                GRABAR(AUX2, c)
+                                AVZ(comentarios,c)
+                            Finpara 
+                            AVZ(comentarios,c) //avanzo cena o almuerzo
+                            AVZ(comentarios,c) //avanzo cantidad
+                            AVZ(comentarios,c)
+                            Mientras c<>"#" hacer   //voy copiando todo el comentario
+                                GRABAR(AUX2, c)
+                                AVZ(comentarios,c)
+                                Si c=" " entonces  //si llego al espacio es porque pasé una palabra 
+                                    pal:=pal + 1
+                                finsi 
+                            Finmientras 
+                            comentarios:=comentarios + 1
+                            GRABAR(AUX2, "#") //porque termine el comentario 
+                            c1:=a_caracter(pal div 100)
+                            c2:=a_caracter((pal div 10) mod10)
+                            c3:=a_caracter(pal mod 10)
+                            GRABAR(AUX2, car1)
+                            GRABAR(AUX2, car2)
+                            GRABAR(AUX2, car3)
+                        Sino 
+                            Si total <=7 entonces 
+                                control_buena:=control_buena + 1
+                            sino 
+                                control_perfecta:= control_perfecta + 1
+                            finsi 
+                        finsi
+                Finmientras //cambie de restaurante 
+                cant_restaurantes:=cant_restaurantes + 1
+                CERRAR(AUX2) //la que estaba guardando los comentarios 
+                Si control_mala>0 entonces //por lo menos un comentario menor a 4
+                    ARR(AUX1)
+                    AVZ(AUX1, a1)
+                    Mientras NFDS(AUX1) hacer 
+                        GRABAR(salida, a1) //estoy copiando el nombre
+                    Finmientras 
+                    ARR(AUX2)
+                    AVZ(AUX2, a2)
+                    Mientras NFDS(AUX2) hacer 
+                        GRABAR(salida, a2) //estoy copiando los comentarios con sus cantidades de palabras  
+                    Finmientras 
+                    CERRAR(AUX1)
+                    CERRAR(AUX2)
+                Finsi //copie todos los comentarios 
+                GRABAR(salida, "@")
+        Finmientras 
+        prom:=comentarios/cant_restaurantes
+        ESC("la cantidad de puntuaciones perfectas es:" control_perfecta)
+        ESC("la cantidad de puntuaciones buenas es:" control_buena)
+        ESC("la cantidad de puntuaciones malas es:" control_mala)
+        ESC("el promedio de comentarios por restaurante es:"prom)
+    FINACCION 
+
+//CONSIDERAMOS QUE TODOS LOS RESTAURANTES VAN A TENER POR LO MENOS UN COMENTARIO CON PUNTUACION MENOR A 04//
+ACCION ejercicio1 ES
+    AMBIENTE 
+        res, comentarios,salida: secuencia de caracter
+        r,c,c2: caracter 
+        num1, num2, c_mala,c_buena, c_perfecta, puntos: entero 
+        PROCEDIMIENTO avanza() ES 
+            Mientras c<>"#" hacer 
+                AVZ(comentario,c)
+            Finmientras 
+        FINPROCEDIMIENTO 
+
+        PROCEDIMIENTO tratar-puntos ES
+                GRABAR(salida, "0") //copio la puntuacion 
+                GRABAR(salida, c2)
+                Para i:=1 a 6 hacer //copio la fecha
+                    GRABAR(salida, c)
+                    AVZ(comentarios, c)
+                Finpara
+                Para i:=1 a 3 hacer //salteo tres caracteres
+                    AVZ(comentarios, c)
+                Finpara
+                Mientras (c<>"#") hacer //copio comentario 
+                    Mientras (c<>" ") ^ (c<>"#") hacer //copiando la palabra 
+                        GRABAR(salida, c)
+                        AVZ(comentarios, c)
+                    Finmientras 
+                    pal:=pal + 1
+                    GRABAR(salida, " ") //para que no queden las palabras juntas
+                    Mientras c=" " hacer //cantidad de palabras por comentario
+                       AVZ(comentarios,c)
+                    Finmientras 
+                Finmientras
+                GRABAR(salida, "#")
+                c1:=a_caracter(pal div 100)
+                c2:=a_caracter((pal div 10) mod10)
+                c3:=a_caracter(pal mod 10)
+                GRABAR(salida, car1)
+                GRABAR(salida, car2)
+                GRABAR(salida, car3)
+                c_malas:=c_malas + 1
+        FIN PROCEDIMIENTO 
+        
+    PROCESO 
+
+        Mientras c<>"*" hacer 
+
+            Mientras r<>"," hacer 
+                GRABAR(salida, r) //copio el nombre 
+                AVZ(restaurante, r)
+            finmientras
+            Mientras r<>"." hacer 
+                AVZ(restaurante, r)
+            Finmientras //avanzo la direccion
+            AVZ(restaurante,r) //avanzo el punto 
+            restaurantes:=restaurantes + 1
+
+            Mientras c<>"@" hacer //que todos los comentarios sean del mismo restaurante                    c1:=c 
+                num1:=a_entero(c)
+                AVZ(comentario,c)
+                c2:=c
+                num2:=a_entero(c)
+                puntos:= num1*10+num2 //converto puntuacion para comparar
+                Segun puntos hacer 
+                    <=4: tratar_puntos //ya avance todo el comentario 
+                    <=7: c_buena:=c_buena + 1
+                            avanzar()
+                    <=10: c_perfecta:=c_perfecta + 1
+                            avanzar()
+                Finsin 
+                comentarios:=comentarios + 1
+            Finmientras 
+        Finmientras 
+        CERRAR(restaurante)
+        CERRAR(comentario)
+        CERRAR(salida)
+        prom:=comentarios/cant_restaurantes
+        ESC("la cantidad de puntuaciones perfectas es:" control_perfecta)
+        ESC("la cantidad de puntuaciones buenas es:" control_buena)
+        ESC("la cantidad de puntuaciones malas es:" control_mala)
+        ESC("el promedio de comentarios por restaurante es:"prom)
+FINACCION 
+
+
+
+
+
