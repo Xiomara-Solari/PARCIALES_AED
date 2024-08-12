@@ -1,0 +1,92 @@
+ACCION recu2023_2 ES
+	AMBIENTE
+		JUBILAR = Registro
+			regional: AN(30);
+			carrera: AN(30);
+			legajo: N(5);
+			sexo: {"m","f"};
+			nom: AN(30);
+		Finregistro;
+
+		Arch: archivo de JUBILAR ordenado por regional, carrera y legajo;
+		reg: JUBILAR;
+
+		JUBILAR_SAL = Registro
+			regional: AN(30);
+			cant_jub: N(10);
+		Finregistro;
+
+		Arch_sal: archivo de JUBILAR_SAL;
+		reg_sal: JUBILAR_SAL;
+
+		resg_reg: AN(30);
+		resg_car: AN(30);
+		resg_regmay: AN(30);
+
+		tot_reg, tot_carf,tot_carm,tot_gral,tot_mayor: entero;
+
+		PROCEDIMIENTO corte_regional() ES	
+			corte_carrera();
+			Esc("En la regional",resg_reg,", la cantidad de docentes es:",tot_reg);
+			tot_gral:=tot_gral+tot_reg;
+
+			reg_sal.regional:= resg_reg;
+			reg_sal.cant_jub:= tot_reg;
+			GRABAR(Arch_sal,reg_sal);
+			
+			SI (tot_reg < tot_mayor) ENTONCES	
+				tot_mayor:= tot_reg;
+				resg_regmay:= reg.regional;
+			Finsi;
+
+			tot_reg:=0;
+			resg_reg:=reg.regional;
+		Finproced;
+
+		PROCEDIMIENTO corte_carrera() ES
+			Esc("El total de docentes a jubilarse de sexo femenino es:",tot_carf);
+			Esc("El total de docentes a jubilarse de sexo masculino es:",tot_carm);
+			tot_reg:= tot_reg + tot_carf + tot_carm;
+			tot_carf:=0;
+			tot_carm:=0;
+			resg_car:= reg.carrera;
+		Finproced;
+
+	PROCESO	
+		ABRIR E/(Arch);
+		LEER(Arch,reg);
+		ABRIR S/(Arch_sal);
+
+		tot_reg:= 0;
+		tot_carf:=0;
+		tot_carm:=0;
+		tot_gral:=0;
+		tot_mayor:=0;
+
+		resg_reg:= reg.regional;
+		resg_car:= reg.carrera;
+		resg_regmay:= reg.regional;
+
+		MIENTRAS NFDA(Arch) HACER:
+			SI (resg_reg <> reg.regional) ENTONCES
+				corte_regional();
+			SINO
+				SI (resg_car <> reg.carrera) ENTONCES:
+					corte_carrera();
+				Finsi;
+			Finsi;
+
+			SI (reg.sexo ="m") ENTONCES
+				tot_carm:= tot_carm + 1;
+			SINO
+				tot_carf:= tot_carf + 1;
+			Finsi;
+
+			LEER(Arch,reg);
+		Finmientras;
+		corte_regional;
+		CERRAR(Arch);
+		CERRAR(Arch_sal);
+		Esc("El total general de docentes a jubilar es:",tot_gral);
+		Esc("La regional",resg_regmay,"presenta la mayor cantidad de docentes a jubilar y es de:"tot_mayor);
+Finaccion.
