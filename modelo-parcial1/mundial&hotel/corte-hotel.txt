@@ -1,0 +1,75 @@
+ACCION ejercicio2 ES 
+    AMBIENTE 
+        HOTELES=registro 
+            codigo_cadena: AN(15)
+            nivel_hotel:1..5
+            codigo_hotel:N(4)
+            nombre_hotel:AN(50)
+            es_ciudad_sede: booleano
+            cantidad_habitaciones:N(4)
+        finregistro 
+        HOT: archivo de HOTELES ordenado por codigo-cadena y nivel_hotel.
+        h:HOTEL 
+        SALIDA=registro 
+            codigo_cadena: AN(15)
+            nivel_hotel:1..5
+            codigo_hotel:N(4)
+            nombre_hotel:AN(50)
+            cantidad_habitaciones:N(4)
+        finregistro 
+        SAL: archivo de SALIDA 
+        s: salida 
+        res_cadena:AN(15)
+        res_nivel: 1..5
+        tot_cadena, tot_general, tot_nivel: entero 
+        PROCEDIMIENTO CORTE_CADENA ES 
+            CORTE_NIVEL
+            ESC("Para la cadena" res_cadena "el total de hoteles que tienen más de 300 habitaciones es:" tot_cadena)
+            tot_general:= tot_general + tot_cadena
+            res_cadena:=h.codigo_cadena
+            tot_cadena:=0
+        FINPROCEDIMIENTO 
+        PROCEDIMIENTO CORTE_NIVEL ES 
+            ESC("Para el nivel" res_nivel "el total de hoteles que tienen más de 300 habitaciones es:" tot_nivel)
+            tot_cadena:= tot_cadena + tot_nivel 
+            res_nivel:= h.nivel_hotel
+            tot_nivel:=0
+        FINPROCEDIMIENTO 
+
+    PROCESO 
+        ABRIR E/(HOT)
+        LEER(HOT, h)
+        ABRIR /S(SAL)
+        res_cadena: h.codigo_cadena
+        res_nivel: h.nivel_hotel 
+        tot_cadena:=0
+        tot_nivel:=0
+        tot_general:=0
+
+        MIENTRAS NFDA(HOT) HACER 
+            Si res_cadena <> h.codigo_cadena entonces 
+                CORTE_CADENA 
+            Sino 
+                Si res_nivel <> h.nivel_hotel entonces 
+                    CORTE_NIVEL
+                Finsi 
+            Finsi 
+
+            Si h.es_ciudad_sede entonces //si es verdadero 
+                Si h.cantidad_habitaciones > 300 entonces 
+                    tot_nivel:=tot_nivel + 1 //sumo hoteles en el corte más chico
+                Finsi 
+                s.codigo_cadena:=h.codigo_cadena:
+                s.nivel_hotel:=h.nivel_hotel
+                s.codigo_hotel:=h.codigo_hotel
+                s.nombre_hotel:=h.nombre_hotel
+                s.cantidad_habitaciones:=h.antidad_habitaciones
+                GRABAR(SAL,s)
+            Finsi 
+            LEER(HOT, h)
+        FINMIENTRAS 
+        CORTE_CADENA 
+        ESC("El total de hoteles con más de 300 habitaciones disponibles es:" tot_general)
+        CERRAR(HOT)
+        CERRAR(SAL)
+    FINACCION 
