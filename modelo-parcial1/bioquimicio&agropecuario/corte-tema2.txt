@@ -1,0 +1,92 @@
+ACCION ejercicio2 ES
+	AMBIENTE 
+		SERVICIO = Registro
+			suc: N(4);
+			area: N(1);
+			id: N(6);
+			desc: AN(45);
+			cant_cli: N(4);
+			monto: N(6,2);
+		Finr;
+
+		Arch: archivo de SERVICIO orednado por suc, area e id;
+		reg: SERVICIO;
+		
+		tot_suc, tot_area, tot_gral, tot_contr, tot_suc1: entero;
+		resg_suc: N(4);
+		resg_ar: N(1);
+		
+		PROCEDIMIENTO corte_ar() ES
+			Escribir("el area", resg_ar,"tiene facturado:", tot_area); //mostrar resguardo
+			tot_suc:= tot_suc + tot_area; //aumento el total mayor
+			tot_area:= 0; //pongo a cero el total del nivel
+			resg_ar:= reg.area; //actualizo el resguardo
+		Finp;
+
+		PROCEDIMIENTO corte_suc() ES
+			corte_ar();
+			Escribir("la sucursal", resg_suc,"tiene facturado:", tot_suc);
+			tot_gral:= tot_gral + tot_suc;
+			tot_suc:= 0;
+				SI (tot_area1 > 2000000) ENTONCES:
+					Escribir("En el area 1 de esta sucursal hay recaudado:",tot_area1);
+				Fins;
+			tot_area1:= 0;
+			resg_suc:= reg.suc;
+		Finp;
+
+	PROCESO	
+		ABRIR E/(Arch);
+		LEER(Arch, reg);
+
+		resg_suc:= reg.suc;
+		resg_ar:= reg.ar;
+
+		tot_suc:=0;
+		tot_area:=0;
+		tot_gral:=0;
+		tot_contr:=0;
+		tot_suc1:=0;
+
+		MIENTRAS NFDA(Arch) HACER:
+			//tratar corte
+			SI (resg_suc <> reg.suc) ENTONCES:
+				corte_suc;
+			SINO
+				SI (resg_ar <> reg.area) ENTONCES:
+					corte_ar; 
+				Fins;
+			Fins;
+
+			//tratar registro
+			SI (reg.cant_cli > 100) ENTONCES
+				tot_area:= tot_area + reg.monto;
+				
+				SI (reg.area = 1) ENTONCES:
+					tot_area1:= tot_area1 + reg.monto; //se incrementa varias veces porque hay varias sucursales que tienen areas 1
+				Fins;
+				//asumimos que la cantidad de clientes sean mayores a 100
+				SI (reg.suc = 1) ENTONCES:
+					tot_suc1:= tot_suc1 + reg.monto; //se incrementa una vez porue solo hay una sucursal 1
+				Fins;
+			SINO
+				SI (reg.cant_cli < 10) ENTONCES:
+					tot_contr:= tot_contr + 1;
+				Fins;
+			Fins;
+		Finm;
+		corte_suc;
+		CERRAR(Arch);
+		Escribir("El total gral es:", tot_gral);
+		Escribir("La cantidad de contrataciones que no superaron los 10 clientes:",tot_contr);
+
+		porcjesuc1:= tot_gral * 0,2
+
+		SI (porcjesuc1 > tot_suc1) ENTONCES:
+			Escribir("El total recaudado por la sucursal 1 representa menos del 20% de lo recaudado por la empresa")
+		SINO
+			Escribir("El total recaudado por la sucursal 1 representa más del 20% de lo recaudado por la empresa")
+		Fins;
+Fin_accion.
+		
+
