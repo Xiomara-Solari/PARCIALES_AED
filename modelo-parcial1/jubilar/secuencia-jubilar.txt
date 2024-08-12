@@ -1,0 +1,108 @@
+ACCION recu2023 ES
+	AMBIENTE
+		docentes,jubilar: secuencia de caracteres;
+		d:caracter;
+		edad: secuencia de enteros;
+		e:entero;
+
+		region_us: caracter;
+		tot_doc, tot_nodoc: entero;
+
+		PROCEDIMIENTO copiar_salida() ES
+			MIENTRAS (d<>"#") HACER:
+				GRABAR(jubilar,d);
+				AVZ(docentes,d);
+			Finmientras;
+			tot_doc:=tot_doc +1;
+		Finproced;
+
+		PROCEDIMIENTO tratar_aporte() ES
+			//consideramos que por ventana hay un digito
+			num1:= e; //primer caracter de la edad
+			AVZ(edad,e);
+			num2:= e;
+			eda:= num1*10 + num2;
+			AVZ(edad,e);
+			//primer car de el aporte
+			a1:= e;
+			AVZ(edad,e);
+			a2:= e;
+			aporte:= a1*10 + a2;
+			AVZ(edad,e); //en la siguiente persona
+		Finproced;
+
+		PROCEDIMIENTO avanzar() ES	
+			REPETIR
+				AVZ(docentes,d);
+			HASTA QUE (v="#")
+		Finproced;
+
+	PROCESO
+		ARR(docentes);
+		AVZ(docentes,d);
+		ARR(edad);
+		AVZ(edad,e);
+		CREAR(jubilar);
+
+		tot_doc:=0;
+		tot_nodoc:=0;
+
+		Esc("Ingrese una regional:");
+		Leer(region_us); //suponemos que el ususario sabe cuáles son las regionales para ingresar
+
+		MIENTRAS NFDS(docentes) HACER:
+			MIENTRAS (d<>"+") HACER: //el + separa las regionales
+				AVZ(docentes,d);
+				AVZ(docentes,d);
+				resg_reg:=d; //resguardo la region
+				MIENTRAS (d<>"#") HACER:
+					SI (resg_reg = region_us) ENTONCES: //region coincide con la del usuario
+						AVZ(docentes,d); //avanza la regio
+						res_sex:= d;
+						AVZ(docentes,d);
+						//aca estoy en el legajo en sec de docentes
+
+						tratar_aporte()
+						SI (aporte >= 30) ENTONCES: //verifico que pueda jubilarse y copio
+							SI (res_sex = "M") ENTONCES:
+								SI (eda >=65) ENTONCES:
+									copiar_salida();
+								fins;
+							SINO
+								SI (eda >=60) ENTONCES:
+									copiar_salida();	
+								fins;
+							fins;
+						SINO
+							tot_nodoc:=tot_nodoc +1 //no se pueden jubilar
+						finsi
+
+					SINO //trata cuando la region es distinta a la des usuario
+						tratar_aporte();
+						SI (aporte >= 30) ENTONCES: 
+							SI (res_sex = "M") ENTONCES:
+								SI (eda >=65) ENTONCES:
+									tot_doc:=tot_doc +1	
+								fins;
+							SINO
+								SI (eda >=60) ENTONCES:
+									tot_doc:=tot_doc +1	
+								fins;
+							fins;
+						SINO
+							tot_nodoc:=tot_nodoc +1
+						Fins;
+						avanzar(); //avanzo hasta el "#"
+					Fins;	
+				Finmientras;
+				AVZ(docentes,d);
+			Finmientras;
+			AVZ(docentes,d);
+
+			Esc("El total de docentes que pueden jubilarse de la regionl",resg_reg,"es:",tot_doc);
+			Esc("El total de docentes que no pueden jubilarse de la regionl",resg_reg,"es:",tot_nodoc);
+		Finmientras;
+		CERRAR(docentes);
+		CERRAR(edad);
+		CERRAR(jubilar);
+Finaccion
