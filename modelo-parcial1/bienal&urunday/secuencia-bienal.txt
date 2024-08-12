@@ -1,0 +1,100 @@
+ACCION secuencia ES 
+AMBIENTE 
+    sec, sec_A, sec_E, sec_F: secuencia de caracter 
+    v, a, e, f: caracter 
+    digito:("0", "1", "2", "3", "4", "5", "6", "7", "8", "9")
+    cant_error, cant_tot, total_africa, total_america, total_europa: entero 
+
+    PROCEDIMIENTO grabar_sec ES
+        Si inicial="A" entonces 
+            Mientras v<>digito hacer 
+                ESC(sec_a, a)
+                AVZ(sec, v)
+            Fin Mientras
+            AVZ(sec, v)
+        Sino 
+            Si inical="F" entonces 
+                Mientras v<>digito hacer 
+                    ESC(sec_f, f)
+                    AVZ(sec, v)
+                Fin Mientras
+                AVZ(sec, v)
+            Sino 
+                Mientras v<>digito hacer 
+                    ESC(sec_e, e)
+                    AVZ(sec, v)
+                Fin Mientras
+                AVZ(sec, v)
+            finsi 
+        finsi 
+    fin procedimiento 
+
+    PROCEDIMIENTO calcular() ES
+        Si v="2" entonces 
+            Segun inicial:=v hacer 
+                "A":= total_america:= total_america + 1
+                "E":= total_europa:= total_europa + 1
+                "F":= total_africa:= total_africa + 1
+            fin segun 
+        finsi 
+    fin procedimiento
+
+PROCESO 
+    ARR(sec1)
+    AVZ(sec1, v)
+    CREAR(sec_A)
+    CREAR(sec_E)
+    CREAR(sec_F)
+
+        MIENTRAS NFDS(sec) HACER 
+            MIENTRAS v<>"|" HACER 
+                inicial:=v
+                grabar_sec() //avanzo hasta el año de inicio 
+                Si inicial="E" entonces 
+                    calcular()
+                    Para i:=1 a 3 hacer 
+                        ESC(sec_E, v)
+                        AVZ(sec, v)
+                    Fin para
+                    Si v no en digito entonces 
+                        Segun v hacer 
+                            ="a": ESC(sec_E, "1")
+                            ="e": ESC(sec_E, "2")
+                            ="i": ESC(sec_E, "3")
+                        fin segun 
+                        cant_error:= cant_error + 1
+                    sino 
+                        ESC(sec_E, v)
+                        AVZ(sec, v)
+                    finsi 
+                Sino 
+                    Si inicial="A" entonces 
+                        calcular()
+                        Para i:=1 a 4 hacer 
+                            ESC(sec_A, v)
+                            AVZ(sec, v)
+                        Fin para
+                    Sino 
+                        calcular()
+                        Para i:=1 a 4 hacer 
+                            ESC(sec_F, v)
+                            AVZ(sec, v)
+                        Fin para
+                    finsi 
+                finsi 
+                cant_tot:= cant_tot + 1
+            FIN MIENTRAS 
+            AVZ(sec, v)
+        FINMIENTRAS
+        CERRAR(sec)
+        CERRAR(sec_A)
+        CERRAR(sec_E)
+        CERRAR(sec_F)
+        porcentaje:=(cant_error/cant_tot)*100
+        ESC("La cantidad de escultores de Africa que inicicaron después del 2000 es:" total_africa)
+        ESC("La cantidad de escultores de América que inicicaron después del 2000 es:" total_america)
+        ESC("La cantidad de escultores de Europa que inicicaron después del 2000 es:" total_europa)
+        ESC("Hubo un" porcentaje "% de escultores con información errónea")
+                
+FIN ACCION 
+
