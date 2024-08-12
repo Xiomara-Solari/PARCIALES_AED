@@ -1,0 +1,90 @@
+ACCION ejercicio1 ES
+	AMBIENTE
+		es, es_sal, aux: secuencia de caracteres;
+		e, e_sal, a, c1, c2: caracter;
+		cant, tot, estudio, paciente, num1, num2: entero;
+
+		FUNCION a_entero(a:caracter):entero ES
+            SEGUN a HACER:
+				"0": a_entero:=0;
+				"1": a_entero:=1;
+				"2": a_entero:=2;
+				"3": a_entero:=3;
+				"4": a_entero:=4;
+				"5": a_entero:=5;
+				"6": a_entero:=6;
+				"7": a_entero:=7;
+				"8": a_entero:=8;
+				"9": a_entero:=9;
+			Fins;
+		Finf;
+
+		PROCEDIMIENTO avanzar() ES
+			PARA i:=1 a 6 HACER:
+			AVZ(es,e);
+			Finp;	
+		Finp;
+
+		PROCEDIMIENTO tratar_a() ES
+			tota:= cant *300; 
+			SI (cant > 2) ENTONCES:
+				ARR(aux);
+				AVZ(aux,a);
+				MIENTRAS NFDS(aux) HACER:
+					GRABAR(es_sal,a); //copiamos el protocolo y nombre en salida
+					AVZ(aux,a);
+				Finm;
+				GRABAR(es_sal,",");
+
+				PARA i:=1 a 6 HACER:
+					GRABAR(es_sal,e);
+					AVZ(es,e);
+				Finp;	
+			Fins;	
+		Finp;		
+
+PROCESO
+	ARR(es);
+	AVZ(es,e);
+	CREAR(es_sal);
+
+	tot:=0;
+	cant:=0;
+	paciente:=0;
+	estudio:=0;
+
+	MIENTRAS (es <> "*") HACER:
+		CREAR(aux);
+		MIENTRAS (es <> ",") HACER:
+			GRABRAR(aux,e); //copio en aux el protocolo y nombre
+			AVZ(es,e); 
+		Finm;
+		CERRAR(aux);
+		AVZ(es,e); //avanzo la , 
+
+		c1:= e;
+		num1:= a_entero(e);
+		AVZ(es,e);
+		c2:= e; //resguardamos los caracteres para no volver a convertir 
+		num2:= a_entero(e);
+		cant:= num1*10 + num2;
+		AVZ(es,e); //primer caracter de el codigo (vocal)
+		
+		estudio:= estudio + cant; //cantidad totaltodos los estudios
+
+		SEGUN e HACER:
+			"a": tratar_a;
+			"e": tot:= cant*420; //tot: cantidad de plata recaudada
+				avanzar();
+			"i": tot:= cant*670;
+				avanzar();
+		Fins;
+		//parado en el primer protocolo del siguiente paciente
+		paciente:= paciente +1;
+	Finm;
+	CERRAR(es);
+	CERRAR(es_sal);
+	Escribir("El total recaudado en el día es: $",tot);
+	Escribir("El promedio de estudios por paciente es:",estudios DIV paciente,"%");
+Fin_accion
+	
