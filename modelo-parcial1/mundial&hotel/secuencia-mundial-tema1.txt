@@ -1,0 +1,69 @@
+ACCION secuencia ES
+AMBIENTE 
+    sec, sal:secuencia de caracter 
+    v, s:caracter 
+    tipo_reserva:("E", "P", Y")
+    tot, total_reserva, n1, n2, capacidad, total: entero 
+
+    
+PROCESO 
+    ARR(sec)
+    AVZ(sec,v)
+    CREAR(sal)
+    ESC("Ingrese el tipo de reserva del que quiere conocer los estadios y cantidad de reservas")
+    LEER(tipo_reserva)
+
+    MIENTRAS NFDS(sec) HACER 
+        Mientras v<>"%" hacer //copio el nombre 
+            ESC(sal, v)
+            AVZ(sec, v)
+        Finmientras 
+            ESC(sal, "%")
+            n1:=a_entero(v) //guarda la capacidad 
+            AVZ(sec, v)
+            n2:=a_entero(v)
+            AVZ(sec, v)
+            capacidad:=(n1*1000)+(n2*100)  //la capacidad esta denotada en miles 
+            AVZ(sec, v)//avanzo #
+        MIENTRAS v<>"@" hacer 
+            Mientras v<>"_" hacer 
+                Si v=tipo_reserva entonces 
+                    Mientras v<>% hacer 
+                        AVZ(sec,v)
+                    Finmientras 
+                    AVZ(sec,v) //avanzo %
+                    AVZ(sec,v) //avanzo zona 
+                    n1:=a_entero(v)
+                    AVZ(sec,v)
+                    n2:=a_entero(v)
+                    total_reserva:=total_reserva + ((n1*10)+n2)
+                    AVZ(sec,v) //llega a _ y sale 
+                Sino 
+                    Mientras v<>% hacer 
+                        AVZ(sec,v)
+                    Finmientras 
+                    AVZ(sec,v) //avanzo %
+                    AVZ(sec,v) //avanzo zona 
+                    n1:=a_entero(v)
+                    AVZ(sec,v)
+                    n2:=a_entero(v)
+                    total:= total + ((n1*10)+n2)
+                    AVZ(sec,v) //llega a _ y sale 
+                    finsi 
+            Fin mientras 
+            AVZ_(sec,v)
+        finmientras 
+        asientos:=a_caracter(total_reserva)
+        ESC(sal, a_caracter)
+        ESC(sal, "@")
+        tot:=total+total_reservas
+        ESC("La cantidad de reservas para todo el estadio:" tot)
+        ESC("El porcentaje de ocupación del estadio es:"(tot/capacidad)*100)
+        AVZ(sec,v) //avanzo @
+    FINMIENTRAS 
+    CERRAR(sec)
+    CERRAR(sal)
+FIN ACCION 
+
+        
+                  
