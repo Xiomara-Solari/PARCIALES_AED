@@ -1,0 +1,87 @@
+ACCION corte ES
+    AMBIENTE 
+        fecha=registro 
+            aa: N(4)
+            mm: 1..12
+            dd:1..31
+        finregistro 
+
+        reg_v=registro 
+            provincia: AN(30)
+            ciudad: AN(30)
+            plataforma: AN(30)
+            fecha_v:fecha 
+            entradas: 1..5
+        finregistro 
+
+        VEN: archivo de reg_v ordenado por provincia, ciudad, plataforma, fecha 
+
+        reg_s=registro 
+            provincia: AN(30)
+            ciudad: AN(30)
+            entradas:1..5
+        finregistro 
+
+        e_ciudad, entradas, cant:entero 
+
+        SAL: archivo de reg_s
+
+        SUBACCION CORTE_PLATAFORMA ES 
+            ESC("Para la plataforma:" reg_v.plataforma)
+            ESC("La cantidad de entradas vendidas:" entradas)
+            e_ciudad:= e_ciudad + entradas 
+            entradas:=0
+            res_plataforma:=reg_v.plataforma
+        FINSUBACCION
+
+        SUBACCION CORTE_CIUDAD ES
+            CORTE_PLATAFORMA
+            ESC("Para la ciudad:" reg_v.ciudad)
+            ESC("La cantidad de entradas vendidas:"e_ciudad)
+            Si cant>1000 entonces 
+                    reg_s.provincia:=reg_v.provincia
+                    reg_s.ciudad:=res_ciudad
+                    reg_s.entradas:=cant
+                    GRABAR(SAL, reg_s)
+            finsi 
+            e_ciudad:=0
+            cant:=0
+            res_ciudad:=reg_v.ciudad
+        FIN SUBACCION 
+        
+            
+    PROCESO 
+        ABRIR E/(VENT)
+        LEER (VEN, reg_v)
+        ABRIR S/(SAL)
+        res_ciudad:=reg_v.ciudad 
+        res_provinica:=reg_v.provincia
+        cant:=0
+        entradas:=0
+        e_ciudad:=0
+
+        MIENTRAS NFDA(VENT) HACER
+            Si res_ciudad <> reg_v.ciudad entonces 
+                CORTE_CIUDAD
+            sino 
+                si res_plataforma <> reg_v.plataforma entonces 
+                    CORTE_PLATAFORMA 
+                finsi 
+            finsi 
+
+            Si (reg_v.fecha.mm=6 o reg_v.fecha.mm=7) entonces 
+                entradas:= entradas + reg_v.entradas
+            finsi 
+
+            Si res_ciudad = reg_v.ciudad entonces 
+                cant:=cant + reg_v.entradas 
+            finsi
+
+            LEER(VENT, reg_v)
+        FIN MIENTRAS 
+
+    FIN ACCION 
+
+
+
+
