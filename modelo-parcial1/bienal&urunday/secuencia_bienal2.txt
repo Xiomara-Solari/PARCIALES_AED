@@ -1,0 +1,114 @@
+continente(1car) NombreEscultor(30car) añoInicio(4car) |...|FDS
+A NombreEscultoraaaaaaaaaaaaaaaa 2018|E NombreEscultoraaaaaaaaaaaaaaaa 201e|E NombreEscultoraaaaaaaaaaaaaaaa 201a|F NombreEscultoraaaaaaaaaaaaaaaa 2010|etc|FDS
+
+ACCION ejercicio1_parcial ES
+	AMBIENTE
+		sec, sec_a, sec_e, sec_f: secuencia de caracter; //sec_a:america, sec_e:euroma, sec_f:africa
+		v: caracter;
+		resg_cont: caracter    //resguarda el continente
+
+		tot_a, tot_e, tot_f, tot_escultor: entero;    //totales de escultores por continente y total gral
+		tot_error: entero;      //total de escultores con info errónea 
+		tot_a2000, tot_e2000, tot_i2000 : entero;   //total de escultores por continente que comenzaron después del 2000
+
+		num, num1, num2, num3, num4: entero;
+		VOCAL:{"a", "e", "i"};
+
+		FUNCION a_entero(a:caracter):entero 
+			SEGUN a HACER
+				"0": a_entero:= 0;
+				"1": a_entero:= 1;
+				"2": a_entero:= 2;
+				"3": a_entero:= 3;
+				"4": a_entero:= 4;
+				"5": a_entero:= 5;
+				"6": a_entero:= 6;
+				"7": a_entero:= 7;
+				"8": a_entero:= 8;
+				"9": a_entero:= 9;
+			Fin_segun;
+		Fin_funcion.
+
+		FUNCION numero(a,b,c,d:entero):entero 
+			unid_mil:= a*1000;
+			centena:= b*100;
+			decena:= c*10;
+			unidad:= d;
+			numero:= unid_mil + centena + decena + unidad;
+		Fin_funcion.
+
+		FUNCION convertir(x: caracter): entero
+			SEGUN x HACER
+				"a": convertir:= 1;
+				"e": convertir:= 2;
+				"i": convertir:= 3;
+			Fin_segun;
+		Fin_funcion.
+
+	PROCESO
+		ARR(sec);
+		AVZ(sec, v);
+		CREAR(sec_a);
+		CREAR(sec_e);
+		CREAR(sec_f);
+
+		tot_a:= 0;
+		tot_e:= 0;
+		tot_f:= 0;
+		tot_escultor:= 0;
+		tot_error:= 0;
+
+		MIENTRAS NFDS(sec) HACER
+			SEGUN v HACER //escribo el caracter del continente en la respectiva sec de salida
+				"A": ESC(sec_a, v);
+				"E": ESC(sec_e, v);
+				"F": ESC(sec_f, v);
+			Fin_segun;
+
+			resg_cont:= v; //resguardo la ventana que tiene el car del continente
+
+			PARA i:= 1 a 30 HACER     //copio el nombre segun el continente
+				SEGUN resg_cont HACER
+					"A": ESC(sec_a, v);
+					"E": ESC(sec_e, v);
+					"F": ESC(sec_f, v);
+				Fin_segun;
+				AVZ(sec, v);
+			Fin_para;
+			AVZ(sec, v); //avanzo a el año
+
+			//convierto los caracteres en enteros para después tratar el año
+			num1:= a_entero(v);
+			AVZ(sec, v);
+			num2:= a_entero(v);
+			AVZ(sec, v);			
+			num3:= a_entero(v);
+			AVZ(sec, v); //me paro el el ultimo caracter del año
+
+			SI (v en VOCAL) ENTONCES 
+				tot_error:= tot_error + 1;  //cuento la cantidad que presenta errores
+				num4:= convertir(v) //modifico el car si presenta error
+ 			SINO
+				num4:= a_entero(v); //si no tiene error solo lo copio en num4 la ventana
+			Fin_si;
+
+			num:= numero(num1, num2, num3, num4); //guardo en num el año que inició
+
+			SI (num > 2000) ENTONCES 
+				SEGUN resg_cont HACER
+					"A": tot_a2000:= tot_a2000 + 1;
+					"E": tot_e2000:= tot_e2000 + 1;
+					"F": tot_f2000:= tot_f2000 + 1;
+				Fin_segun;
+			Fin_si;
+
+			AVZ(sec, v);
+			total_escultor:= total_escultor + 1; //cuento la cantidad de escultores
+		Fin_mientras;
+
+		Escribir("La cantidad de escultores de América que comenzaron su disciplina después del año 2000 son:", tot_a2000);
+		Escribir("La cantidad de escultores de Europa que comenzaron su disciplina después del año 2000 son:", tot_e2000);
+		Escribir("La cantidad de escultores de África que comenzaron su disciplina después del año 2000 son:", tot_f2000);
+		Escribir("El promedio de los escultores que presentaron información errónea fue de:", tot_error DIV total_escultor,"%");
+		CERRAR(sec);
+Fin_accion.
