@@ -1,0 +1,98 @@
+ACCION ejercicio2_parcial ES
+	AMBIENTE
+		ECL = Registro
+			año: N(4);
+			mes: N(2);
+			material: {"M", "D"};
+			codigo: AN(12);
+			nombre: AN(20);
+		Fin_registro;
+
+		Arch: archivo de ECL ordenado por año, mes, material y codigo;
+		reg: ECL;
+
+		resg_año: N(4); 
+		resg_mes: N(2);
+		resg_material:{"M", "D"};
+
+		tot_año; tot_mes; tot_material, tot_gral, tot_escult: entero;
+
+		ECL_SALIDA = Registro
+			mes: N(2);
+			material: {"M", "D"};
+			cantidad: N(3);
+		Fin_registro;
+
+		Arch_sal: archido de ECL_SALIDA ordenado por mes y material;
+		reg_sal: ECL_SALIDA;
+
+		PROCEDIMIENTO corte_material()
+			Escribir("La cantidad de esculturas del material:", resg_material,"es de:", tot_material);
+			tot_mes:= tot_mes + tot_material;
+			tot_material:= 0;
+			resg_material:= reg.material;
+		Fin_procedimiento;
+		
+		PROCEDIMIENTO corte_mes()
+			corte_material()
+			Escribir("La cantidad de esculturas del mes:", resg_mes,"es de:", tot_mes);
+			tot_año:= tot_año + tot_mes;
+			tot_mes:= 0;
+			resg_mes:= reg.mes;
+		Fin_procedimiento;		
+
+		PROCEDIMIENTO corte_año()
+			corte_mes()
+			Escribir("La cantidad de esculturas del año:", resg_año,"es de:", tot_año);
+			tot_gral:= tot_gral + tot_año;
+			tot_año:= 0;
+			resg_año:= reg.año;
+		Fin_procedimiento;		
+
+	PROCESO
+		ABRIR E/(Arch);
+		LEER(Arch, reg);
+		ABRIR S/(Arch_sal);
+
+		tot_año:= 0;
+		tot_mes:= 0;
+		tot_material:= 0;
+		tot_gral:= 0;
+		tot_escult:= 0;
+
+		resg_año:= reg.año;
+		resg_mes:= reg.mes;
+		resg_material:= reg.material;
+
+		MIENTRAS NFDA(Arch) HACER
+			SI (reg.año <> resg_año) ENTONCES 
+				corte_año();
+			SINO 
+				SI (reg.mes <> resg_mes) ENTONCES
+					corte_mes();
+				SINO
+					Si (reg.material <> resg_material) ENTONCES
+						corte_material();
+					Fin_si;
+				Fin_si;
+			Fin_si;
+
+			tot_material:= tot_material + 1;
+			tot_escult:= tot_escult + 1;
+
+			SI (reg.año = 2015) ENTONCES
+				Escribir("|MES|              |MATERIAL|             |CANTIDAD|")
+				reg_sal.mes:= reg.mes;
+				reg_sal.material:= reg.material;
+				reg_sal:= tot_escult;
+				ESC(Arch_sal, reg);
+			Fin_si;
+
+		Fin_mientras;
+
+		corte_año();
+		Escribir("El total general de esculturas emplazadas es:", tot_gral);
+
+		CERRAR(Arch);
+		CERRAR(Arch_sal);
+Fin_accion.
