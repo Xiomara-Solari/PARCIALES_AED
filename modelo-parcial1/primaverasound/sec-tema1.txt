@@ -1,0 +1,94 @@
+ACCION secuencia es 
+    AMBIENTE 
+        sec1, sec2, sal: secuencia de caracter 
+        cant_distinta, cant_virtual, compras: entero 
+        Función convertir_a_entero(numero: caracter) entero ES
+            Segun numero hacer //sólo se pueden comprar hasta cinco entradas
+                "0": numero:=0
+                "1": numero:=1
+                "2": numero:=2
+                "3": numero:=3
+                "4": numero:=4
+                "5": numero:=5
+            Finsegun
+        Finfuncion
+
+    PROCESO 
+    cant_distinta:=0
+        MIENTRAS NFDS(sec1) & NFDS(sec2) HACER 
+            cant_virtual:=0
+            compras:=0
+
+            Para i:=1 a 10 hacer 
+                AVZ(sec1, v1)
+            FIN PARA //quedo en el medio de pago 
+
+            Si v1="T" entonces  
+                Para i:=1 a 6 hacer 
+                    AVZ(sec2, v2)
+                Fin para //quedo en el nombre 
+                Si v2<>"#" entonces //si el usuariono abandonó la fila 
+                    Mientras v2<>"+" hacer 
+                            ESC(sal, v2)
+                            AVZ(sec2, v2)
+                    Finmientras
+                    AVZ(sec2, v2)
+                    ESC(sal, "+")
+                    AVZ(sec2, v2)
+
+                    Mientras v2<>"?" hacer 
+                        Para i:=1 a 8 hacer 
+                            ESC(sal, v2)
+                            AVZ(sec2, v2)
+                        finpara
+                        compras:=compras + 1
+                        Mientras v<>"." hacer 
+                            AVZ(sec2, v2)
+                        Finmientras 
+                        AVZ(sec2,v2)  //avanzo el punto 
+                    Finmientras 
+                    ESC(sal, "#")
+                    AVZ(sec2, v2) //quedo en la siguiente compra 
+                    
+                    AVZ(sec1, v1) //avanzo medio de pago
+                    cant_virtual:=convertir_a_entero(v1)
+                    AVZ(sec1, v1)
+                    AVZ(sec1, v1) //avanzo # y quedo en la hora siguiente 
+
+                    Si compras <> cant_virtual entonces 
+                        cant_distinta:= cant_distinta + 1
+                    finsi 
+
+                sino //el usuario abandonó la fila 
+                    AVZ(sec2, v2) //avanzo +
+                    AVZ(sec2, v2) //avanzo ?
+                    Mientras v1<>"#" hacer 
+                        AVZ(sec1, v1)
+                    Fin mientras
+                    AVZ(sec1,v1)//avanzo # y quedo en la hora siguiente 
+                finsi 
+            Sino 
+                    AVZ(sec1, v1) //avanzo medio de pago
+                    cant_virtual:=convertir_a_entero(v1)
+                    AVZ(sec1, v1) //avanzo cant
+                    AVZ(sec1, v1) //avanzo # y quedo en la hora siguiente 
+                    Mientras v2<>"?" hacer 
+                        Para i:=1 a 8 hacer 
+                            AVZ(sec2, v2)
+                        finpara
+                        compras:=compras + 1
+                        Mientras v<>"." hacer 
+                            AVZ(sec2, v2)
+                        Finmientras 
+                        AVZ(sec2,v2)
+                    Finmientras 
+                    AVZ(sec2, v2) //voy a la siguiente compra 
+            finsi 
+        FIN MIENTRAS 
+        CERRAR(sal)
+        CERRAR(sec1)
+        CERRAR(sec2)
+        ESC("El total de usuarios que compraron entradas distintas a las declaradas en la fila virtual es:" cant_distinta)
+FIN ACCION 
+                
+                
