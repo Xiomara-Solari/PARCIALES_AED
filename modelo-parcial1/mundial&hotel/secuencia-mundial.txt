@@ -1,0 +1,84 @@
+ACCION ejercicio1 ES
+    AMBIENTE
+        estadio: sec de caracteres;
+        v: caracter;
+        sec_sal: secuencia de enteros;
+        e: entero;
+        cont_tipoE,cont_tipoP,cont_tipoY, cont_res,num1,num2,cont_sal: entero;
+        zona_us,: caracter;
+
+        FUNCION a_entero(a:caracter):entero ES
+            SEGUN a HACER:
+				"0": a_entero:=0;
+				"1": a_entero:=1;
+				"2": a_entero:=2;
+				"3": a_entero:=3;
+				"4": a_entero:=4;
+				"5": a_entero:=5;
+				"6": a_entero:=6;
+				"7": a_entero:=7;
+				"8": a_entero:=8;
+				"9": a_entero:=9;
+			Fins;
+		Finf;
+
+    PROCESO
+        ARR(estadio);
+        AVZ(estadio,v);
+        CREAR(sec_sal);
+
+        cont_tipoE:=0;
+		cont_tipoP:=0;
+		cont_tipoY:=0;
+
+        Escribir("ingrese la zona cuya reservas quiere conocer:");
+        Leer(zona_us);
+
+        MIENTRAS NFDS(estadio) HACER:
+			cont_sal:=0;
+			MIENTRAS (v<>"@") HACER:
+				MIENTRAS (v<>"_") HACER:
+					MIENTRAS (v <> "%") HACER:
+						AVZ(estadio,v);
+					Fin_m
+					MIENTRAS (v <> "#") HACER:
+						AVZ(estadio,v);
+					Fin_m;
+
+					SEGUN v HACER:
+						"E": cont_tipoE:= cont_tipoE + 1;
+						"P": cont_tipoP:= cont_tipoP + 1;
+						"Y": cont_tipoY:= cont_tipoY + 1;
+					Finseg;
+
+					AVZ(estadio,v); //avanzamos la reserva
+					
+					MIENTRAS (v <> "%") HACER: //avanzo la razon social
+						AVZ(estadio,v);
+					Fin_m
+
+					//asumimos que quiere concer la cant de reservas de todos los estadios
+					SI (res_zona = zona_us) ENTONCES: //nos paramos en zona
+						cont_res:= cont_res + 1;
+					Fins;
+
+					//convertimos los dos caracteres siguientes
+					AVZ(estadio,v);
+					num1:= a_entero(v);
+					AVZ(estadio,v);
+					num2:= a_entero(v);
+					cont_sal:= cont_sal + (num1*10)+num2;
+				Fin_m
+			Fin_m
+			e:= cont_sal;
+			GRABAR(sec_sal,e);
+		Fin_m;
+
+		Escribir("La cantidad de reserva del tipo 'E' es:",cont_tipoE);
+		Escribir("La cantidad de reserva del tipo 'P' es:",cont_tipoP);
+		Escribir("La cantidad de reserva del tipo 'Y' es:",cont_tipoY);
+		Escribir("Cantidad de reservas de la zona:",res_zona,"es:",cont_res);
+
+		CERRAR(estadio);
+		CERRAR(sec_sal);
+Fin_acc.
