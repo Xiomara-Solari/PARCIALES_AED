@@ -1,0 +1,146 @@
+ACCION lista (primc: puntero a nodoc) ES
+
+AMBIENTE
+
+fecha = registro
+    anio:N(4)
+    mes:1..12
+    dia:1..31
+fin registro
+
+compras = registro
+    fechaCompra: fecha 
+    dniCliente:
+    cantArticulos:
+    importeTotal
+fin registro 
+
+COM: archivo de compras ordenado por fechaCompra
+c: compras 
+
+socios = registro
+    dniCliente:
+    apeyNom:
+    fechaAdhesion:
+    categoria
+fin registro
+
+SOC: archivo de socios indexado por dniCliente
+s: socios
+
+nodo = registro
+    apeyNom:
+    chances:
+    prox: puntero a nodo
+    ant: puntero a nodo
+fin registro
+
+cant, turno, k, j: entero 
+
+prim, ult, p, q: puntero a nodo 
+
+nodoc = registro
+    numero: 1..55
+    prox: puntero a nodoc
+fin registro
+
+pc: puntero a nodoc
+
+FUNCION existeEnLista (nombreCliente: AN(20)): booleano ES
+    Si prim = nil entonces 
+        existeEnLista:=verdadero
+    Sino 
+        p:=prim
+        Mientras (p<>nil) y (dni<>*p.apeyNom) hacer 
+            p:=*p.prox
+        Fin Mientras
+        Si p = nil entonces 
+            existeEnLista:= falso 
+        Sino 
+            existeEnLista:= verdadero
+        Finsi 
+    Finsi 
+FIN FUNCION 
+
+PROCEDIMIENTO insertarLista() ES
+    Si prim = nil entonces 
+        prim:=q
+        ult:=q
+        *q.prox:=nil
+        *q.ant:=nil
+    Sino 
+        p:=prim 
+        Mientras (p<>nil) y (*p.apeyNom < *q.apeyNom) hacer 
+            ant:=p
+            p:=*p.prox 
+        Fin Mientras 
+        si p = prim entonces  //primer elemento
+			*q.prox:= p
+			*p.ant:= q
+			*q.ant:= nil
+			prim:= q
+		sino
+			si P = nil entonces  //ultimo elemento
+				ult.prox:= q
+				*q.ant:= ult
+				*q.prox:= nil
+				ult:= q
+			sino					//elemento medio
+				*q.prox:= p
+				*q.ant:= *p.ant
+				*p.ant:= q		
+				*(*q.ant).prox:= q  	//esto se lee como : al nodo que apunta *q.ant, de ese nodo que su puntero interno, prox, apunte a q.
+			finsi
+		finsi
+	finsi
+FIN PROCEDIMIENTO 
+
+
+PROCESO
+
+ABRIR E/(COM)
+ABRIR E/S(SOC)
+LEER(COM,c)
+prim:=nil 
+pc:=primc
+k:=1
+MIENTRAS NFDA(COM) HACER 
+    s.dniCliente:=c.dniCliente
+    LEER(SOC,s)
+    SI EXISTE 
+        nuevo(q)
+        *q.apeyNom:=s.apeyNom
+        bandera:=existeEnLista(c.dniCliente)
+        cant:= c.importeTotal DIV 100
+        Si bandera entonces 
+            *q.chances:= *q.chances + cant 
+        Sino 
+            *q.chances:= 5 + cant 
+        Finsi 
+        Si (s.categoria = "BLACK") entonces 
+            turno:= Tirar()
+            j:=k
+            pc:=primc
+            Mientras (j<>0) Hacer /me quedo en la posición k, que en la primera vuelta va a ser el primer nodo.
+                ant:= p
+			    p:= *p.prox
+                j:=j - 1
+            Fin Mientras
+            Mientras (turno <> 0) hacer 
+                ant:= p
+			    p:= *p.prox
+                turno:=turno - 1
+                k:= k + 1  /en las siguiente vueltas voy a empezar a tirar desde la última posición anterior 
+            Fin Mientras 
+            Si turno = 0 entonces 
+                *q.chances:= *q.chances + *pc.numero 
+            Finsi 
+        fin si 
+        insertarLista()
+    SINO 
+        ESC("SOLO LOS SOCIOS PUEDEN PARTICIPAR")
+    FINSI 
+    LEER(COM, c)
+FIN MIENTRAS 
+
+FIN ACCION 

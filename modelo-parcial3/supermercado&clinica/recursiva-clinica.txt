@@ -1,0 +1,72 @@
+ACCION recursiva-clinica (prim: puntero a nodo) ES
+
+AMBIENTE 
+
+nodo = registro
+    dniPaciente: N(8)
+    nomyApe: AN(20)
+    edad: N(2)
+    nroCama: entero
+    nroHabitacion: entero 
+    temperaturas: arreglo de [1..4] de N(2,1)
+    prox: puntero a nodo
+finregistro
+
+nombre: AN(20)
+
+p, q, ant: puntero a nodo
+
+PROCEDIMIENTO eliminarLista ES
+    Si prim = nil entonces 
+        ESC("ESTA LISTA YA ESTÁ VACÍA")
+    Sino 
+        p:=prim 
+        Mientras (p<>nil) y (*p.apeyNom <> nombre) hacer 
+            ant:=P
+            p:=*p.prox 
+        Fin Mientras
+        Si p = nil entonces						//si se termina la lista
+			esc("el elemento no encontrado")
+		sino
+			si p = prim entonces
+				prim:= *p.prox    //primer elemento o unico elemento
+			sino
+				*ant.prox:= *p.prox		//elemento medio o ultimo elemento
+			finsi
+			disponer(p)		
+		finsi
+	finsi
+FIN PROCEDIMIENTO
+
+FUNCION funTemperatura (a: arreglo de [1..4] de N(2,1)): booleano ES
+    Si i < 4 entonces 
+        Si a[i] <= 36.5 entonces 
+            i:=i+1
+            funTemperatura:= funTemperatura(a[i])
+        Sino 
+            funTemperatura:= verdadero
+        Finsi 
+    Sino 
+        Si a[i] <= 36.5 entonces 
+            funTemperatura:= falso
+        Sino 
+            funTemperatura:= verdadero
+        Finsi 
+    Finsi
+FIN FUNCION 
+
+
+FIN FUNCION 
+
+PROCESO 
+
+p:=prim 
+Mientras (p<>nil) hacer 
+    bandera:=funTemperatura(*p.temperaturas)
+    Si bandera entonces 
+        ESC("PACIENTE:" *p.nomyApe)
+        nombre:=*p.nomyApe
+        eliminarLista()
+    finsi
+Fin Mientras 
+FIN ACCION
